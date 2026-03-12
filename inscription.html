@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>IA Admin - Inscription</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="box">
+        <h2>Créer un compte Admin</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button id="btnSignup">Créer mon accès</button>
+        <p><a href="index.html" style="color: #ccc;">Retour à la connexion</a></p>
+        <p id="message"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9/firebase-auth.js";
+        
+        const firebaseConfig = {
+  apiKey: "AIzaSyDCI2PKccPv6cQH7S6BIqXXA7ispMVRelc",
+  authDomain: "my-ai-v1.firebaseapp.com",
+  projectId: "my-ai-v1",
+  storageBucket: "my-ai-v1.firebasestorage.app",
+  messagingSenderId: "710057147750",
+  appId: "1:710057147750:web:3ab50505799aafc5db5ca7",
+  measurementId: "G-KB6Q7X3LTR"
+};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('btnSignup').onclick = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(() => alert("Compte créé ! Connecte-toi maintenant."))
+                .catch(err => document.getElementById('message').innerText = err.message);
+        };
+    </script>
+</body>
+</html>
