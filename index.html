@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Electronique Autonome</title>
+    <style>
+        :root { --bg: #131314; --card: #1e1f20; --blue: #8ab4f8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 15px; border-radius: 15px; max-width: 85%; line-height: 1.4; }
+        .user { background: var(--card); align-self: flex-end; border: 1px solid #333; }
+        .ai { background: transparent; align-self: flex-start; color: #e3e3e3; }
+        .source { font-size: 0.8em; color: var(--blue); margin-top: 5px; display: block; }
+        .input-area { padding: 20px; display: flex; gap: 10px; background: var(--bg); }
+        input { flex: 1; padding: 16px; border-radius: 28px; border: 1px solid #555; background: var(--card); color: #fff; outline: none; }
+        button { background: var(--blue); color: #000; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="chat"></div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Posez une question technique...">
+        <button onclick="envoyer()">Go</button>
+    </div>
+    <script>
+        async function envoyer() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat');
+            if(!input.value) return;
+
+            const userText = input.value;
+            chat.innerHTML += `<div class="msg user">${userText}</div>`;
+            input.value = "";
+
+            const res = await fetch('/api', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: userText })
+            });
+
+            const data = await res.json();
+            chat.innerHTML += `
+                <div class="msg ai">
+                    ${data.reponse}
+                    ${data.source ? `<a class="source" href="${data.source}" target="_blank">Source : ${data.source}</a>` : ''}
+                </div>`;
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>
