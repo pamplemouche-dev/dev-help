@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>IA Admin - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="box" style="width: 500px;">
+        <h2>🧠 Console d'Apprentissage</h2>
+        <p>Connecté en tant que : <span id="user-email">...</span></p>
+        <hr>
+        <label>Concept d'électronique :</label>
+        <input type="text" id="concept" placeholder="Ex: Résistance">
+        <label>Définition / Cours :</label>
+        <textarea id="definition" placeholder="Explique ici la notion..."></textarea>
+        <button id="btnEnseigner">Enregistrer dans Firebase</button>
+        <button id="btnLogout" style="background: #333; margin-top: 20px;">Déconnexion</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9/firebase-firestore.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyDCI2PKccPv6cQH7S6BIqXXA7ispMVRelc",
+  authDomain: "my-ai-v1.firebaseapp.com",
+  projectId: "my-ai-v1",
+  storageBucket: "my-ai-v1.firebasestorage.app",
+  messagingSenderId: "710057147750",
+  appId: "1:710057147750:web:3ab50505799aafc5db5ca7",
+  measurementId: "G-KB6Q7X3LTR"
+};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sécurité : Vérifier si l'admin est connecté
+        onAuthStateChanged(auth, (user) => {
+            if (!user) { window.location.href = "index.html"; }
+            else { document.getElementById('user-email').innerText = user.email; }
+        });
+
+        // Apprendre à l'IA
+        document.getElementById('btnEnseigner').onclick = async () => {
+            const concept = document.getElementById('concept').value;
+            const definition = document.getElementById('definition').value;
+            if(concept && definition) {
+                await addDoc(collection(db, "cerveau_ia"), {
+                    prompt: concept,
+                    reponse: definition,
+                    date: new Date()
+                });
+                alert("L'IA a mémorisé cette notion !");
+                document.getElementById('concept').value = "";
+                document.getElementById('definition').value = "";
+            }
+        };
+
+        document.getElementById('btnLogout').onclick = () => signOut(auth);
+    </script>
+</body>
+</html>
